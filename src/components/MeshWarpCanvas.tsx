@@ -185,7 +185,7 @@ export const MeshWarpCanvas: React.FC<MeshWarpCanvasProps> = ({
       
       // Draw frame outline
       ctx.beginPath();
-      ctx.strokeStyle = '#f97316';
+      ctx.strokeStyle = '#d64a2f';
       ctx.lineWidth = 2;
       uvPoints.forEach((p, i) => {
         const px = drawX + p.x * drawW;
@@ -200,25 +200,25 @@ export const MeshWarpCanvas: React.FC<MeshWarpCanvasProps> = ({
       uvPoints.forEach((p, i) => {
         const px = drawX + p.x * drawW;
         const py = drawY + p.y * drawH;
-        ctx.fillStyle = draggingIdx === i ? '#ea580c' : 'white';
-        ctx.strokeStyle = '#f97316';
+        ctx.fillStyle = draggingIdx === i ? '#d64a2f' : '#f6f4ef';
+        ctx.strokeStyle = '#111111';
         ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.arc(px, py, 7, 0, Math.PI * 2);
         ctx.fill();
         ctx.stroke();
 
-        ctx.fillStyle = '#f97316';
-        ctx.font = 'bold 10px sans-serif';
+        ctx.fillStyle = '#111111';
+        ctx.font = '700 10px "IBM Plex Mono", monospace';
         ctx.textAlign = 'left';
-        ctx.fillText(labels[i], px + 12, py + 4);
+        ctx.fillText(labels[i].toUpperCase(), px + 12, py + 4);
       });
 
       // Draw instruction
-      ctx.fillStyle = '#f97316';
-      ctx.font = 'bold 14px sans-serif';
+      ctx.fillStyle = '#d64a2f';
+      ctx.font = '700 13px "IBM Plex Mono", monospace';
       ctx.textAlign = 'center';
-      ctx.fillText('DRAG VERTICES TO ALIGN WITH FACE', centerX, drawY - 20);
+      ctx.fillText('ALIGN VERTICES WITH THE FACE UNDER MEASUREMENT', centerX, drawY - 20);
       
       ctx.restore();
       return;
@@ -274,15 +274,15 @@ export const MeshWarpCanvas: React.FC<MeshWarpCanvasProps> = ({
       );
     }
 
-    // Post-processing: High-key "Skincare" filter overlay
+    // Post-processing: cool inspection overlay.
     ctx.save();
-    ctx.globalCompositeOperation = 'overlay';
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+    ctx.globalCompositeOperation = 'screen';
+    ctx.fillStyle = 'rgba(200, 255, 244, 0.1)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.restore();
 
     // Draw Radar UI (Labels and Circle)
-    ctx.strokeStyle = 'rgba(0, 0, 0, 0.05)';
+    ctx.strokeStyle = 'rgba(17, 17, 17, 0.24)';
     ctx.lineWidth = 0.5;
     
     // Grid circles
@@ -294,6 +294,7 @@ export const MeshWarpCanvas: React.FC<MeshWarpCanvasProps> = ({
 
     // Axis lines
     if (!isCalibrating) {
+      ctx.strokeStyle = 'rgba(17, 17, 17, 0.1)';
       for (let i = 0; i < numPoints; i++) {
         const angle = i * angleStep - Math.PI / 2;
         ctx.beginPath();
@@ -301,41 +302,33 @@ export const MeshWarpCanvas: React.FC<MeshWarpCanvasProps> = ({
         ctx.lineTo(centerX + Math.cos(angle) * maxRadius, centerY + Math.sin(angle) * maxRadius);
         ctx.stroke();
 
-        // Labels with POLA-style typography
-        ctx.fillStyle = '#000';
-        ctx.font = '500 9px "Inter", sans-serif';
+        // Labels with system/interface typography.
+        ctx.fillStyle = '#111111';
+        ctx.font = '700 11px "Space Grotesk", sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        const labelDist = maxRadius + 35;
+        const labelDist = maxRadius + 26;
         const lx = centerX + Math.cos(angle) * labelDist;
         const ly = centerY + Math.sin(angle) * labelDist;
         
         // Japanese/Scientific style label rendering
         ctx.save();
         ctx.translate(lx, ly);
-        ctx.fillText(labels[i].toUpperCase(), 0, -5);
-        ctx.fillStyle = '#999';
-        ctx.font = '400 7px "JetBrains Mono"';
-        ctx.fillText(`LV. ${(metrics[i] * 10).toFixed(1)}`, 0, 5);
+        const labelText = labels[i].toUpperCase();
+        ctx.fillStyle = '#111111';
+        ctx.fillText(labelText, 0, -5);
+        ctx.fillStyle = '#d64a2f';
+        ctx.font = '600 8px "IBM Plex Mono", monospace';
+        ctx.fillText(`IDX ${(metrics[i] * 100).toFixed(0)}`, 0, 6);
         ctx.restore();
       }
 
-      // Draw the polygon outline (very subtle)
-      ctx.strokeStyle = 'rgba(0, 0, 0, 0.15)';
-      ctx.lineWidth = 0.5;
-      ctx.beginPath();
-      ctx.moveTo(radarPoints[0].x, radarPoints[0].y);
-      for (let i = 1; i < numPoints; i++) {
-        ctx.lineTo(radarPoints[i].x, radarPoints[i].y);
-      }
-      ctx.closePath();
-      ctx.stroke();
     }
 
   }, [image, metrics, isLoaded, labels, uvPoints, isCalibrating]);
 
   return (
-    <div className="relative flex items-center justify-center p-8 bg-white border border-gray-100 shadow-sm rounded-2xl overflow-hidden">
+    <div className="relative flex items-center justify-center p-8 bg-[#EEEAE2] border border-black/10 shadow-sm overflow-hidden">
       <canvas 
         ref={canvasRef} 
         width={size} 
@@ -346,8 +339,8 @@ export const MeshWarpCanvas: React.FC<MeshWarpCanvasProps> = ({
         onPointerUp={handlePointerUp}
       />
       {!image && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-50/50 backdrop-blur-sm">
-          <p className="text-gray-400 font-medium">Upload a photo to begin</p>
+        <div className="absolute inset-0 flex items-center justify-center bg-[#EEEAE2]/80 backdrop-blur-sm">
+          <p className="text-[#6B6258] font-mono text-sm uppercase">Upload a face to begin</p>
         </div>
       )}
     </div>
