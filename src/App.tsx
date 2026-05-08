@@ -16,7 +16,10 @@ const INITIAL_LABELS = [
 const buildDefaultPoints = (count: number) => {
   return Array.from({ length: count }, (_, i) => {
     const angle = i * (Math.PI * 2 / count) - Math.PI / 2;
-    const r = 0.3;
+    // r matches the canvas radar polygon's typical radius so the texture-to-mesh
+    // ratio is ~1:1 — the face renders close to natural scale instead of being
+    // squeezed from a tiny inner circle onto a large polygon.
+    const r = 0.45;
     return {
       x: 0.5 + Math.cos(angle) * r,
       y: 0.5 + Math.sin(angle) * r
@@ -42,7 +45,7 @@ export default function App() {
         newLabels.push(`Factor ${i + 1}`);
         newMetrics.push(0.7);
         const angle = i * (Math.PI * 2 / count) - Math.PI / 2;
-        newUv.push({ x: 0.5 + Math.cos(angle) * 0.3, y: 0.5 + Math.sin(angle) * 0.3 });
+        newUv.push({ x: 0.5 + Math.cos(angle) * 0.45, y: 0.5 + Math.sin(angle) * 0.45 });
       }
     } else {
       newLabels.splice(count);
@@ -125,11 +128,18 @@ export default function App() {
     link.click();
   };
 
+  // Axis order (clockwise from top): Recognizability, Trace, Similarity, Anomaly,
+  // Memory, Exposure, Fragmentation, Disguise. Kept within [0.40, 1.00] so the
+  // face stays a face — each preset only nudges the polygon toward its theme.
   const PRESETS = [
-    { name: 'Traceable', metrics: [0.95, 0.88, 0.82, 0.24, 0.76, 0.9, 0.22, 0.18] },
-    { name: 'Data Leak', metrics: [0.72, 0.96, 0.65, 0.48, 0.86, 1.0, 0.42, 0.25] },
-    { name: 'Identity Drift', metrics: [0.42, 0.55, 0.38, 0.9, 0.62, 0.58, 0.84, 0.68] },
-    { name: 'Disguise Field', metrics: [0.22, 0.34, 0.28, 0.78, 0.4, 0.26, 0.95, 1.0] },
+    // Traceable — upper-right lean, traceability axes high, disguise softly recessed.
+    { name: 'Traceable',      metrics: [0.95, 1.00, 0.85, 0.48, 0.62, 0.78, 0.45, 0.42] },
+    // Data Leak — bottom-heavy: memory & exposure swell, rest stays neutral.
+    { name: 'Data Leak',      metrics: [0.62, 0.75, 0.55, 0.72, 0.95, 1.00, 0.52, 0.46] },
+    // Identity Drift — diagonal: anomaly + fragmentation peak, recognizability mellow.
+    { name: 'Identity Drift', metrics: [0.48, 0.55, 0.50, 0.92, 0.62, 0.55, 0.95, 0.75] },
+    // Disguise Field — top-left bias: disguise tops out, traceable side trimmed but alive.
+    { name: 'Disguise Field', metrics: [0.45, 0.48, 0.50, 0.65, 0.52, 0.46, 0.90, 1.00] },
   ];
 
   return (

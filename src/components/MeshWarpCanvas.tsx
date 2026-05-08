@@ -274,17 +274,10 @@ export const MeshWarpCanvas: React.FC<MeshWarpCanvasProps> = ({
       );
     }
 
-    // Post-processing: cool inspection overlay.
-    ctx.save();
-    ctx.globalCompositeOperation = 'screen';
-    ctx.fillStyle = 'rgba(200, 255, 244, 0.1)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.restore();
-
     // Draw Radar UI (Labels and Circle)
     ctx.strokeStyle = 'rgba(17, 17, 17, 0.24)';
     ctx.lineWidth = 0.5;
-    
+
     // Grid circles
     [0.2, 0.4, 0.6, 0.8, 1.0].forEach(r => {
       ctx.beginPath();
