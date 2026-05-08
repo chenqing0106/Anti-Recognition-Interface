@@ -120,12 +120,62 @@ export default function App() {
     setActiveTab('metrics');
   };
 
+  const drawExportDimensionLayer = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
+    const centerX = width / 2;
+    const centerY = height / 2;
+    const maxRadius = (width / 2) * 0.8;
+    const angleStep = (Math.PI * 2) / metrics.length;
+
+    ctx.strokeStyle = 'rgba(17, 17, 17, 0.28)';
+    ctx.lineWidth = 0.75;
+    [0.2, 0.4, 0.6, 0.8, 1.0].forEach(r => {
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, r * maxRadius, 0, Math.PI * 2);
+      ctx.stroke();
+    });
+
+    ctx.strokeStyle = 'rgba(17, 17, 17, 0.18)';
+    labels.forEach((label, i) => {
+      const angle = i * angleStep - Math.PI / 2;
+      ctx.beginPath();
+      ctx.moveTo(centerX, centerY);
+      ctx.lineTo(centerX + Math.cos(angle) * maxRadius, centerY + Math.sin(angle) * maxRadius);
+      ctx.stroke();
+
+      const labelDist = maxRadius + 26;
+      const lx = centerX + Math.cos(angle) * labelDist;
+      const ly = centerY + Math.sin(angle) * labelDist;
+      ctx.save();
+      ctx.translate(lx, ly);
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#111111';
+      ctx.font = '700 11px "Space Grotesk", sans-serif';
+      ctx.fillText(label.toUpperCase(), 0, -5);
+      ctx.fillStyle = '#d64a2f';
+      ctx.font = '600 8px "IBM Plex Mono", monospace';
+      ctx.fillText(`IDX ${(metrics[i] * 100).toFixed(0)}`, 0, 6);
+      ctx.restore();
+    });
+  };
+
   const downloadImage = () => {
     const canvas = document.querySelector('canvas');
     if (!canvas) return;
+    const exportCanvas = document.createElement('canvas');
+    exportCanvas.width = canvas.width;
+    exportCanvas.height = canvas.height;
+    const ctx = exportCanvas.getContext('2d');
+    if (!ctx) return;
+
+    ctx.fillStyle = '#EEEAE2';
+    ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+    ctx.drawImage(canvas, 0, 0);
+    drawExportDimensionLayer(ctx, exportCanvas.width, exportCanvas.height);
+
     const link = document.createElement('a');
     link.download = `anti-recognition-interface-${Date.now()}.png`;
-    link.href = canvas.toDataURL('image/png', 1.0);
+    link.href = exportCanvas.toDataURL('image/png', 1.0);
     link.click();
   };
 
