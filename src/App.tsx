@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { MeshWarpCanvas } from './components/MeshWarpCanvas';
 import { Upload, RefreshCcw, Download, Sparkles, Sliders, Image as ImageIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import defaultFaceUrl from './assets/default-face.jpeg';
 const INITIAL_LABELS = [
   'Recognizability',
   'Trace',
@@ -30,7 +31,7 @@ const buildDefaultPoints = (count: number) => {
 export default function App() {
   const [labels, setLabels] = useState<string[]>(INITIAL_LABELS);
   const [metrics, setMetrics] = useState<number[]>(INITIAL_LABELS.map(() => 0.7));
-  const [imageUrl, setImageUrl] = useState<string>('https://images.unsplash.com/photo-1596704017254-9b121068fb31?auto=format&fit=crop&q=80&w=1000');
+  const [imageUrl, setImageUrl] = useState<string>(defaultFaceUrl);
   const [image, setImage] = useState<HTMLImageElement | null>(null);
   const [uvPoints, setUvPoints] = useState<{x: number, y: number}[]>(buildDefaultPoints(INITIAL_LABELS.length));
 
