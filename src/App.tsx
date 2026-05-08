@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { MeshWarpCanvas } from './components/MeshWarpCanvas';
-import { Upload, RefreshCcw, Download, Sparkles, Sliders, Image as ImageIcon } from 'lucide-react';
+import { Upload, RefreshCcw, Download, Sparkles, Sliders, Image as ImageIcon, HelpCircle, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import defaultFaceUrl from './assets/default-face.jpeg';
 const INITIAL_LABELS = [
@@ -34,6 +34,7 @@ export default function App() {
   const [imageUrl, setImageUrl] = useState<string>(defaultFaceUrl);
   const [image, setImage] = useState<HTMLImageElement | null>(null);
   const [uvPoints, setUvPoints] = useState<{x: number, y: number}[]>(buildDefaultPoints(INITIAL_LABELS.length));
+  const [isGuideOpen, setIsGuideOpen] = useState(false);
 
   const updateDimensionCount = (newCount: number) => {
     const count = Math.max(3, Math.min(12, newCount));
@@ -206,6 +207,13 @@ export default function App() {
           </div>
           
           <div className="flex items-center gap-4">
+            <button
+              onClick={() => setIsGuideOpen(true)}
+              className="inline-flex items-center gap-2 px-3 py-2 border border-black/10 text-xs font-mono uppercase text-[#6B6258] hover:bg-white hover:text-black transition-colors"
+            >
+              <HelpCircle className="w-4 h-4" />
+              Guide / 指南
+            </button>
             <button 
               onClick={randomize}
               className="p-2 hover:bg-black hover:text-[#F6F4EF] transition-colors text-[#6B6258] border border-transparent hover:border-black"
@@ -221,6 +229,72 @@ export default function App() {
           </div>
         </div>
       </header>
+
+      <AnimatePresence>
+        {isGuideOpen && (
+          <motion.div
+            className="fixed inset-0 z-[80] flex items-start justify-center bg-black/30 px-4 py-24 backdrop-blur-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsGuideOpen(false)}
+          >
+            <motion.div
+              className="w-full max-w-lg border border-black/15 bg-white p-6 shadow-2xl"
+              initial={{ opacity: 0, y: -16, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -8, scale: 0.98 }}
+              transition={{ duration: 0.18 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="mb-5 flex items-start justify-between gap-6">
+                <div>
+                  <h2 className="text-sm font-bold uppercase text-[#111111]">Operation Guide / 操作指南</h2>
+                  <p className="mt-1 text-[10px] font-mono uppercase text-[#6B6258]">Basic workflow for creating and exporting a trace</p>
+                  <p className="mt-1 text-xs text-[#6B6258]">创建并导出图像的基本流程</p>
+                </div>
+                <button
+                  onClick={() => setIsGuideOpen(false)}
+                  className="p-1.5 text-[#6B6258] hover:bg-[#EEEAE2] hover:text-black transition-colors"
+                  aria-label="Close guide"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+              <ol className="space-y-4 text-sm leading-relaxed text-[#2B2924]">
+                <li className="flex gap-3">
+                  <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center bg-[#111111] text-[#F6F4EF] text-[10px] font-mono">1</span>
+                  <span>
+                    <span className="block">Upload a face image, or use the default drawing as the source.</span>
+                    <span className="mt-1 block text-[#6B6258]">上传一张人脸图片，或直接使用默认线稿作为素材。</span>
+                  </span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center bg-[#111111] text-[#F6F4EF] text-[10px] font-mono">2</span>
+                  <span>
+                    <span className="block">Adjust Coordinates to reshape the identity trace inside the circular grid.</span>
+                    <span className="mt-1 block text-[#6B6258]">调整 Coordinates 数值，在圆形网格内改变身份轨迹的形状。</span>
+                  </span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center bg-[#111111] text-[#F6F4EF] text-[10px] font-mono">3</span>
+                  <span>
+                    <span className="block">Open Calibration to move sampling points and rename or add dimensions.</span>
+                    <span className="mt-1 block text-[#6B6258]">进入 Calibration 移动采样点，也可以重命名或增加维度。</span>
+                  </span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center bg-[#111111] text-[#F6F4EF] text-[10px] font-mono">4</span>
+                  <span>
+                    <span className="block">Export Trace to download the current image with the dimension grid preserved.</span>
+                    <span className="mt-1 block text-[#6B6258]">点击 Export Trace 下载当前图像，导出时会保留维度网格。</span>
+                  </span>
+                </li>
+              </ol>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <main className="max-w-7xl mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-12 gap-10">
         {/* Left Column: Canvas */}
@@ -369,7 +443,7 @@ export default function App() {
                 </div>
 
                 <div className="flex gap-4">
-                  <button 
+                  <button
                     onClick={resetCalibration}
                     className="flex-1 flex items-center justify-center gap-2 py-3 border border-black/20 text-xs font-mono uppercase hover:bg-[#EEEAE2] transition-all text-[#2B2924]"
                   >
@@ -404,6 +478,7 @@ export default function App() {
               ))}
             </div>
           </div>
+
         </div>
       </main>
 
