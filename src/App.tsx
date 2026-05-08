@@ -168,7 +168,7 @@ export default function App() {
     const ctx = exportCanvas.getContext('2d');
     if (!ctx) return;
 
-    ctx.fillStyle = '#EEEAE2';
+    ctx.fillStyle = '#FFFFFF';
     ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
     ctx.drawImage(canvas, 0, 0);
     drawExportDimensionLayer(ctx, exportCanvas.width, exportCanvas.height);

@@ -321,7 +321,7 @@ export const MeshWarpCanvas: React.FC<MeshWarpCanvasProps> = ({
   }, [image, metrics, isLoaded, labels, uvPoints, isCalibrating]);
 
   return (
-    <div className="relative flex items-center justify-center p-8 bg-[#EEEAE2] border border-black/10 shadow-sm overflow-hidden">
+    <div className="relative flex items-center justify-center p-8 bg-white border border-black/10 shadow-sm overflow-hidden">
       <canvas 
         ref={canvasRef} 
         width={size} 
@@ -332,7 +332,7 @@ export const MeshWarpCanvas: React.FC<MeshWarpCanvasProps> = ({
         onPointerUp={handlePointerUp}
       />
       {!image && (
-        <div className="absolute inset-0 flex items-center justify-center bg-[#EEEAE2]/80 backdrop-blur-sm">
+        <div className="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm">
           <p className="text-[#6B6258] font-mono text-sm uppercase">Upload a face to begin</p>
         </div>
       )}
