@@ -135,7 +135,7 @@ export const MeshWarpCanvas: React.FC<MeshWarpCanvasProps> = ({
       const dx = x - centerX;
       const dy = y - centerY;
       const dist = Math.hypot(dx, dy);
-      const val = Math.max(0, Math.min(1.2, dist / maxRadius)); // Allow slight "over-extension" for effect
+      const val = Math.max(0, Math.min(1, dist / maxRadius));
 
       const newMetrics = [...metrics];
       newMetrics[draggingIdx] = val;
